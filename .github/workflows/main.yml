@@ -1,0 +1,25 @@
+# .gitlab-ci.yml
+
+stages:
+  - notify
+
+check_keyword:
+  stage: notify
+  script:
+    - keyword="sysadmin"
+    - found=$(git grep -l "$keyword")
+    - if [ -n "$found" ]; then
+        echo "Keyword '$keyword' found in the following files:";
+        echo "$found";
+        echo "Sending email notification...";
+        # Add script to send email notification with file names
+        echo "Subject: Keyword '$keyword' found in Git repository" > email.txt;
+        echo "Files containing the keyword '$keyword':" >> email.txt;
+        echo "$found" >> email.txt;
+        cat email.txt | mail -s "Keyword '$keyword' found in Git repository" kalyanichegireddy@gmail.com;
+      else
+        echo "No files found containing the keyword '$keyword'.";
+      fi
+  only:
+    - push
+    - pull_request
